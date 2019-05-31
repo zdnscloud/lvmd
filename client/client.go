@@ -13,7 +13,7 @@ type Client struct {
 	conn *grpc.ClientConn
 }
 
-func NewClient(addr string, timeout time.Duration) (*Client, error) {
+func New(addr string, timeout time.Duration) (*Client, error) {
 	dialOptions := []grpc.DialOption{
 		grpc.WithInsecure(),
 		grpc.WithTimeout(timeout),
