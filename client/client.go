@@ -5,10 +5,15 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/zdnscloud/lvmd-server/proto"
+	pb "github.com/zdnscloud/lvmd/proto"
 )
 
-func NewClient(addr string, timeout time.Duration) (pb.LVMClient, error) {
+type Client struct {
+	pb.LVMClient
+	conn *grpc.ClientConn
+}
+
+func NewClient(addr string, timeout time.Duration) (*Client, error) {
 	dialOptions := []grpc.DialOption{
 		grpc.WithInsecure(),
 		grpc.WithTimeout(timeout),
@@ -19,5 +24,12 @@ func NewClient(addr string, timeout time.Duration) (pb.LVMClient, error) {
 		return nil, err
 	}
 
-	return pb.NewLVMClient(conn), nil
+	return &Client{
+		LVMClient: pb.NewLVMClient(conn),
+		conn:      conn,
+	}, nil
+}
+
+func (c *Client) Close() error {
+	return c.conn.Close()
 }
