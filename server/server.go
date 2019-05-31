@@ -114,3 +114,44 @@ func (s Server) RemoveTagLV(ctx context.Context, in *pb.RemoveTagLVRequest) (*pb
 	}
 	return &pb.RemoveTagLVReply{CommandOutput: log}, nil
 }
+
+func (s Server) CreatePV(ctx context.Context, in *pb.CreatePVRequest) (*pb.CreatePVReply, error) {
+	log, err := commands.CreatePV(ctx, in.Block)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to create pv: %v", err)
+	}
+	return &pb.CreatePVReply{CommandOutput: log}, nil
+}
+
+func (s Server) RemovePV(ctx context.Context, in *pb.RemovePVRequest) (*pb.RemovePVReply, error) {
+	log, err := commands.RemovePV(ctx, in.Block)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to remove pv: %v", err)
+	}
+	return &pb.RemovePVReply{CommandOutput: log}, nil
+}
+
+func (s Server) ListPV(ctx context.Context, in *pb.ListPVRequest) (*pb.ListPVReply, error) {
+	pvs, err := commands.ListPV(ctx)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to list pv: %v", err)
+	}
+	pbpvs := make([]*pb.PVInfo, len(pvs))
+	for i, v := range pvs {
+		pbpvs[i] = v.ToProto()
+	}
+	return &pb.ListPVReply{Pvinfos: pbpvs}, nil
+}
+
+func (s Server) Validate(ctx context.Context, in *pb.ValidateRequest) (*pb.ValidateReply, error) {
+	v, err := commands.Validate(ctx, in.Block)
+	return &pb.ValidateReply{Validate: v}, err
+}
+
+func (s Server) Destory(ctx context.Context, in *pb.DestoryRequest) (*pb.DestoryReply, error) {
+	log, err := commands.Destory(ctx, in.Block)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to destory %v: %v", in.Block, err)
+	}
+	return &pb.DestoryReply{CommandOutput: log}, nil
+}

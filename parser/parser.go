@@ -283,6 +283,15 @@ type VG struct {
 	Tags     []string
 }
 
+type PV struct {
+	Name  string
+	UUID  string
+	Fmt   string
+	Size  uint64
+	Usize uint64
+	Fsize uint64
+}
+
 // ToProto returns lvm.LogicalVolume representation of struct
 func (lv LV) ToProto() *pb.LogicalVolume {
 	return &pb.LogicalVolume{
@@ -304,6 +313,17 @@ func (vg VG) ToProto() *pb.VolumeGroup {
 		FreeSize: vg.FreeSize,
 		Uuid:     vg.UUID,
 		Tags:     vg.Tags,
+	}
+}
+
+func (pv PV) ToProto() *pb.PVInfo {
+	return &pb.PVInfo{
+		Name:  pv.Name,
+		Uuid:  pv.UUID,
+		Fmt:   pv.Fmt,
+		Size:  pv.Size,
+		Usize: pv.Usize,
+		Fsize: pv.Fsize,
 	}
 }
 
@@ -399,6 +419,34 @@ func ParseVG(line string) (*VG, error) {
 		FreeSize: freeSize,
 		UUID:     fields["LVM2_VG_UUID"],
 		Tags:     strings.Split(fields["LVM2_VG_TAGS"], ","),
+	}, nil
+}
+
+func ParsePV(line string) (*PV, error) {
+	//pvs --units=b --separator="<:SEP:>" --nosuffix --noheadings -o pv_name,pv_size,pv_used,pv_free,pv_fmt,pv_uuid --nameprefixes -a
+	fields, err := parse(line, 6)
+	if err != nil {
+		return nil, err
+	}
+	size, err := strconv.ParseUint(fields["LVM2_PV_SIZE"], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	fsize, err := strconv.ParseUint(fields["LVM2_PV_FREE"], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	usize, err := strconv.ParseUint(fields["LVM2_PV_USED"], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &PV{
+		Name:  fields["LVM2_PV_NAME"],
+		UUID:  fields["LVM2_PV_UUID"],
+		Fmt:   fields["LVM2_PV_FMT"],
+		Size:  size,
+		Usize: usize,
+		Fsize: fsize,
 	}, nil
 }
 

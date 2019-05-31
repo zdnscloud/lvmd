@@ -202,3 +202,71 @@ func RemoveTagLV(ctx context.Context, vg string, name string, tags []string) (st
 	out, err := cmd.CombinedOutput()
 	return string(out), err
 }
+
+func CreatePV(ctx context.Context, block string) (string, error) {
+	args := []string{block, "-y", "-v"}
+	cmd := exec.Command("pvcreate", args...)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
+func RemovePV(ctx context.Context, block string) (string, error) {
+	args := []string{block, "-y", "-v"}
+	cmd := exec.Command("pvremove", args...)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
+func ListPV(ctx context.Context) ([]*parser.PV, error) {
+	cmd := exec.Command("pvs", "--units=b", "--separator=<:SEP:>", "--nosuffix", "--noheadings",
+		"-o", "pv_name,pv_size,pv_used,pv_free,pv_fmt,pv_uuid", "--nameprefixes", "-a")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	outStr := strings.TrimSpace(string(out))
+	outLines := strings.Split(outStr, "\n")
+	pvs := make([]*parser.PV, len(outLines))
+	for i, line := range outLines {
+		line = strings.TrimSpace(line)
+		pv, err := parser.ParsePV(line)
+		if err != nil {
+			return nil, err
+		}
+		pvs[i] = pv
+	}
+	return pvs, nil
+}
+
+func Validate(ctx context.Context, block string) (bool, error) {
+	cmd := exec.Command("udevadm", "info", "--query=property", block)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return false, err
+	}
+	out1Str := strings.TrimSpace(string(out))
+	if strings.Contains(out1Str, "ID_PART_TABLE") || strings.Contains(out1Str, "ID_FS_TYPE") {
+		return false, nil
+	}
+
+	out, err = exec.Command("blkid").Output()
+	if err != nil {
+		return false, err
+	}
+	outputs := strings.Split(string(out), "\n")
+	for _, l := range outputs {
+		if !strings.Contains(l, block) {
+			continue
+		}
+		if strings.Contains(l, "PTTYPE=") || strings.Contains(l, "TYPE=") {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+func Destory(ctx context.Context, block string) (string, error) {
+	cmd := exec.Command("wipefs", "--all", block)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
