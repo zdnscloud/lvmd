@@ -123,6 +123,12 @@ func ListVG(ctx context.Context) ([]*parser.VG, error) {
 	return vgs, nil
 }
 
+func ExtendVG(ctx context.Context, name string, physicalVolume string) (string, error) {
+	cmd := exec.Command("vgextend", name, physicalVolume)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
 func CreateVG(ctx context.Context, name string, physicalVolume string, tags []string) (string, error) {
 	args := []string{name, physicalVolume, "-v"}
 	for _, tag := range tags {

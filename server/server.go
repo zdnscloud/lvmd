@@ -91,6 +91,14 @@ func (s Server) CreateVG(ctx context.Context, in *pb.CreateVGRequest) (*pb.Creat
 	return &pb.CreateVGReply{CommandOutput: log}, nil
 }
 
+func (s Server) ExtendVG(ctx context.Context, in *pb.ExtendVGRequest) (*pb.ExtendVGReply, error) {
+	log, err := commands.ExtendVG(ctx, in.Name, in.PhysicalVolume)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to extend vg: %v", err)
+	}
+	return &pb.ExtendVGReply{CommandOutput: log}, nil
+}
+
 func (s Server) RemoveVG(ctx context.Context, in *pb.CreateVGRequest) (*pb.RemoveVGReply, error) {
 	log, err := commands.RemoveVG(ctx, in.Name)
 	if err != nil {
