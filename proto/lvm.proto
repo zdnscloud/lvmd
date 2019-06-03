@@ -174,12 +174,12 @@ message RemoveVGReply {
   string command_output = 1;
 }
 
-message extendVGRequest {
+message ExtendVGRequest {
   string name = 1;
   string physical_volume = 2;
 }
 
-message extendVGReply {
+message ExtendVGReply {
   string command_output = 1;
 }
 
@@ -265,6 +265,7 @@ service LVM {
 
  rpc CreatePV(CreatePVRequest) returns (CreatePVReply) {}
  rpc RemovePV(RemovePVRequest) returns (RemovePVReply) {}
+ rpc ExtendVG(ExtendVGRequest) returns (ExtendVGReply) {}
  rpc ListPV(ListPVRequest) returns (ListPVReply) {}
 
  rpc Validate(ValidateRequest) returns (ValidateReply) {}

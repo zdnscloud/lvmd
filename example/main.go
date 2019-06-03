@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	addr := "202.173.9.4:1736"
+	addr := "202.173.9.5:1736"
 	timeout := 3 * time.Second
 	cli, err := client.New(addr, timeout)
 	defer cli.Close()
@@ -21,6 +21,14 @@ func main() {
 			Block: "/dev/vdb",
 		}
 		out, err := cli.CreatePV(context.TODO(), &req)
+		fmt.Println(out.CommandOutput, err)
+	*/
+	/*
+		req := pb.ExtendVGRequest{
+			Name:           "k8s",
+			PhysicalVolume: "/dev/vdc",
+		}
+		out, err := cli.ExtendVG(context.TODO(), &req)
 		fmt.Println(out.CommandOutput, err)
 	*/
 	/*
@@ -40,16 +48,16 @@ func main() {
 		out, err := cli.RemovePV(context.TODO(), &req)
 		fmt.Println(out.CommandOutput, err)
 	*/
-	/*
-		req := pb.ValidateRequest{
-			Block: "/dev/vdb",
-		}
-		out, err := cli.Validate(context.TODO(), &req)
-		fmt.Println(out.Validate, err)
-	*/
-	req := pb.DestoryRequest{
+	req := pb.ValidateRequest{
 		Block: "/dev/vdb",
 	}
-	out, err := cli.Destory(context.TODO(), &req)
-	fmt.Println(out.CommandOutput, err)
+	out, err := cli.Validate(context.TODO(), &req)
+	fmt.Println(out.Validate, err)
+	/*
+		req := pb.DestoryRequest{
+			Block: "/dev/vdb",
+		}
+		out, err := cli.Destory(context.TODO(), &req)
+		fmt.Println(out.CommandOutput, err)
+	*/
 }
