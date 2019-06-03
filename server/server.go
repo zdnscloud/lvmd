@@ -19,6 +19,7 @@ limitations under the License.
 package server
 
 import (
+	"fmt"
 	"github.com/zdnscloud/lvmd/commands"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -162,4 +163,13 @@ func (s Server) Destory(ctx context.Context, in *pb.DestoryRequest) (*pb.Destory
 		return nil, grpc.Errorf(codes.Internal, "failed to destory %v: %v", in.Block, err)
 	}
 	return &pb.DestoryReply{CommandOutput: log}, nil
+}
+
+func (s Server) Match(ctx context.Context, in *pb.MatchRequest) (*pb.MatchReply, error) {
+	log, err := commands.Match(ctx, in.Block)
+	fmt.Println(log)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to get vg name %v: %v", in.Block, err)
+	}
+	return &pb.MatchReply{CommandOutput: log}, nil
 }

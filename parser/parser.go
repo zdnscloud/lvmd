@@ -328,12 +328,15 @@ func (pv PV) ToProto() *pb.PVInfo {
 }
 
 func parse(line string, numComponents int) (map[string]string, error) {
+	fields := map[string]string{}
+	if line == "" {
+		return fields, nil
+	}
 	components := strings.Split(line, separator)
 	if len(components) != numComponents {
 		return nil, fmt.Errorf("expected %d components, got %d", numComponents, len(components))
 	}
 
-	fields := map[string]string{}
 	for _, c := range components {
 		idx := strings.Index(c, "=")
 		if idx == -1 {
@@ -362,6 +365,10 @@ func ParseLV(line string) (*LV, error) {
 	fields, err := parse(line, 8)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(fields) == 0 {
+		return &LV{}, nil
 	}
 
 	size, err := strconv.ParseUint(fields["LVM2_LV_SIZE"], 10, 64)
@@ -403,6 +410,10 @@ func ParseVG(line string) (*VG, error) {
 		return nil, err
 	}
 
+	if len(fields) == 0 {
+		return &VG{}, nil
+	}
+
 	size, err := strconv.ParseUint(fields["LVM2_VG_SIZE"], 10, 64)
 	if err != nil {
 		return nil, err
@@ -428,6 +439,10 @@ func ParsePV(line string) (*PV, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(fields) == 0 {
+		return &PV{}, nil
+	}
+
 	size, err := strconv.ParseUint(fields["LVM2_PV_SIZE"], 10, 64)
 	if err != nil {
 		return nil, err

@@ -250,6 +250,14 @@ message DestoryReply {
   string command_output = 1;
 }
 
+message MatchRequest {
+  string block = 1;
+}
+
+message MatchReply {
+  string command_output = 1;
+}
+
 service LVM {
  rpc ListLV(ListLVRequest) returns (ListLVReply) {}
  rpc CreateLV(CreateLVRequest) returns (CreateLVReply) {}
@@ -268,6 +276,7 @@ service LVM {
  rpc ExtendVG(ExtendVGRequest) returns (ExtendVGReply) {}
  rpc ListPV(ListPVRequest) returns (ListPVReply) {}
 
+ rpc Match(MatchRequest) returns (MatchReply) {}
  rpc Validate(ValidateRequest) returns (ValidateReply) {}
  rpc Destory(DestoryRequest) returns (DestoryReply) {}
 }

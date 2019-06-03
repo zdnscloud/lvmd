@@ -276,3 +276,21 @@ func Destory(ctx context.Context, block string) (string, error) {
 	out, err := cmd.CombinedOutput()
 	return string(out), err
 }
+
+func Match(ctx context.Context, block string) (string, error) {
+	fmt.Println(block)
+	cmd := exec.Command("pvs", "--noheadings", "--separator=#", "--nosuffix", block)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println("111", err)
+		return "", err
+	}
+	outStr := strings.TrimSpace(string(out))
+	outLines := strings.Split(outStr, "\n")
+	fmt.Println(outLines)
+	for _, line := range outLines {
+		line = strings.TrimSpace(line)
+		return strings.Split(line, "#")[1], nil
+	}
+	return "", nil
+}
