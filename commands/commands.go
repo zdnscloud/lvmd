@@ -129,6 +129,12 @@ func ExtendVG(ctx context.Context, name string, physicalVolume string) (string, 
 	return string(out), err
 }
 
+func ReduceVG(ctx context.Context, name string, physicalVolume string) (string, error) {
+	cmd := exec.Command("vgreduce", name, physicalVolume)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
 func CreateVG(ctx context.Context, name string, physicalVolume string, tags []string) (string, error) {
 	args := []string{name, physicalVolume, "-v"}
 	for _, tag := range tags {
@@ -272,25 +278,17 @@ func Validate(ctx context.Context, block string) (bool, error) {
 }
 
 func Destory(ctx context.Context, block string) (string, error) {
-	cmd := exec.Command("wipefs", "--all", block)
+	cmd := exec.Command("wipefs", "-af", block)
 	out, err := cmd.CombinedOutput()
 	return string(out), err
 }
 
-func Match(ctx context.Context, block string) (string, error) {
-	fmt.Println(block)
+func Match(ctx context.Context, block string) string {
 	cmd := exec.Command("pvs", "--noheadings", "--separator=#", "--nosuffix", block)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println("111", err)
-		return "", err
+		return ""
 	}
 	outStr := strings.TrimSpace(string(out))
-	outLines := strings.Split(outStr, "\n")
-	fmt.Println(outLines)
-	for _, line := range outLines {
-		line = strings.TrimSpace(line)
-		return strings.Split(line, "#")[1], nil
-	}
-	return "", nil
+	return strings.Split(outStr, "#")[1]
 }

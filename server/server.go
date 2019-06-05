@@ -19,7 +19,6 @@ limitations under the License.
 package server
 
 import (
-	"fmt"
 	"github.com/zdnscloud/lvmd/commands"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -100,6 +99,14 @@ func (s Server) ExtendVG(ctx context.Context, in *pb.ExtendVGRequest) (*pb.Exten
 	return &pb.ExtendVGReply{CommandOutput: log}, nil
 }
 
+func (s Server) ReduceVG(ctx context.Context, in *pb.ExtendVGRequest) (*pb.ExtendVGReply, error) {
+	log, err := commands.ReduceVG(ctx, in.Name, in.PhysicalVolume)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to reduce vg: %v", err)
+	}
+	return &pb.ExtendVGReply{CommandOutput: log}, nil
+}
+
 func (s Server) RemoveVG(ctx context.Context, in *pb.CreateVGRequest) (*pb.RemoveVGReply, error) {
 	log, err := commands.RemoveVG(ctx, in.Name)
 	if err != nil {
@@ -166,10 +173,6 @@ func (s Server) Destory(ctx context.Context, in *pb.DestoryRequest) (*pb.Destory
 }
 
 func (s Server) Match(ctx context.Context, in *pb.MatchRequest) (*pb.MatchReply, error) {
-	log, err := commands.Match(ctx, in.Block)
-	fmt.Println(log)
-	if err != nil {
-		return nil, grpc.Errorf(codes.Internal, "failed to get vg name %v: %v", in.Block, err)
-	}
+	log := commands.Match(ctx, in.Block)
 	return &pb.MatchReply{CommandOutput: log}, nil
 }

@@ -274,6 +274,7 @@ service LVM {
  rpc CreatePV(CreatePVRequest) returns (CreatePVReply) {}
  rpc RemovePV(RemovePVRequest) returns (RemovePVReply) {}
  rpc ExtendVG(ExtendVGRequest) returns (ExtendVGReply) {}
+ rpc ReduceVG(ExtendVGRequest) returns (ExtendVGReply) {}
  rpc ListPV(ListPVRequest) returns (ListPVReply) {}
 
  rpc Match(MatchRequest) returns (MatchReply) {}
