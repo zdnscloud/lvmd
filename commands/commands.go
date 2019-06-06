@@ -292,3 +292,13 @@ func Match(ctx context.Context, block string) string {
 	outStr := strings.TrimSpace(string(out))
 	return strings.Split(outStr, "#")[1]
 }
+
+func GetPVNum(ctx context.Context, name string) (string, error) {
+	cmd := exec.Command("vgs", "--noheadings", "--separator=#", "--nosuffix", name)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return "0", err
+	}
+	outStr := strings.TrimSpace(string(out))
+	return strings.Split(outStr, "#")[1], nil
+}

@@ -176,3 +176,11 @@ func (s Server) Match(ctx context.Context, in *pb.MatchRequest) (*pb.MatchReply,
 	log := commands.Match(ctx, in.Block)
 	return &pb.MatchReply{CommandOutput: log}, nil
 }
+
+func (s Server) GetPVNum(ctx context.Context, in *pb.CreateVGRequest) (*pb.GetPVNumReply, error) {
+	log, err := commands.GetPVNum(ctx, in.Name)
+	if err != nil {
+		return &pb.GetPVNumReply{CommandOutput: log}, err
+	}
+	return &pb.GetPVNumReply{CommandOutput: log}, nil
+}

@@ -258,6 +258,10 @@ message MatchReply {
   string command_output = 1;
 }
 
+message GetPVNumReply {
+  string command_output = 1;
+}
+
 service LVM {
  rpc ListLV(ListLVRequest) returns (ListLVReply) {}
  rpc CreateLV(CreateLVRequest) returns (CreateLVReply) {}
@@ -278,6 +282,7 @@ service LVM {
  rpc ListPV(ListPVRequest) returns (ListPVReply) {}
 
  rpc Match(MatchRequest) returns (MatchReply) {}
+ rpc GetPVNum(CreateVGRequest) returns (GetPVNumReply) {}
  rpc Validate(ValidateRequest) returns (ValidateReply) {}
  rpc Destory(DestoryRequest) returns (DestoryReply) {}
 }
