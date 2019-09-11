@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	addr := "202.173.9.5:1736"
+	addr := "202.173.9.4:1736"
 	timeout := 3 * time.Second
 	cli, err := client.New(addr, timeout)
 	defer cli.Close()
@@ -48,11 +48,13 @@ func main() {
 		out, err := cli.RemovePV(context.TODO(), &req)
 		fmt.Println(out.CommandOutput, err)
 	*/
-	req := pb.ValidateRequest{
-		Block: "/dev/vdb",
+	req := pb.ResizeLVRequest{
+		VolumeGroup: "k8s",
+		Name:        "lvm01",
+		Size:        uint64(17294967296),
 	}
-	out, err := cli.Validate(context.TODO(), &req)
-	fmt.Println(out.Validate, err)
+	out, err := cli.ResizeLV(context.TODO(), &req)
+	fmt.Println(out, err)
 	/*
 		req := pb.DestoryRequest{
 			Block: "/dev/vdb",

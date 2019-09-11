@@ -101,6 +101,24 @@ func CloneLV(ctx context.Context, src, dest string) (string, error) {
 	return string(out), err
 }
 
+func ResizeLV(ctx context.Context, vg string, name string, size uint64) (string, error) {
+	cmd := exec.Command("lvresize", "-L", fmt.Sprintf("%db", size), "-v", fmt.Sprintf("%s/%s", vg, name))
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
+func ResizeLVe2fsck(ctx context.Context, vg string, name string) (string, error) {
+	cmd := exec.Command("e2fsck", "-f", "-y", fmt.Sprintf("/dev/%s/%s", vg, name))
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
+func ResizeLV2fs(ctx context.Context, vg string, name string) (string, error) {
+	cmd := exec.Command("resize2fs", fmt.Sprintf("/dev/%s/%s", vg, name))
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
 func ListVG(ctx context.Context) ([]*parser.VG, error) {
 
 	cmd := exec.Command("vgs", "--units=b", "--separator=<:SEP:>", "--nosuffix", "--noheadings",

@@ -1,6 +1,6 @@
 REGISTRY_NAME = zdnscloud
 IMAGE_Name = lvmd
-IMAGE_VERSION = v0.5
+IMAGE_VERSION = v0.6
 
 .PHONY: all container
 

@@ -151,6 +151,16 @@ message CloneLVReply {
   string command_output = 1;
 }
 
+message ResizeLVRequest {
+  string volume_group = 1;
+  string name = 2;
+  uint64 size = 3;
+}
+
+message ResizeLVReply {
+  string command_output = 1;
+}
+
 message ListVGRequest {}
 message ListVGReply {
   repeated VolumeGroup volume_groups = 1;
@@ -267,6 +277,7 @@ service LVM {
  rpc CreateLV(CreateLVRequest) returns (CreateLVReply) {}
  rpc RemoveLV(RemoveLVRequest) returns (RemoveLVReply) {}
  rpc CloneLV(CloneLVRequest) returns (CloneLVReply) {}
+ rpc ResizeLV(ResizeLVRequest) returns (ResizeLVReply) {}
 
  rpc AddTagLV(AddTagLVRequest) returns (AddTagLVReply) {}
  rpc RemoveTagLV(RemoveTagLVRequest) returns (RemoveTagLVReply) {}

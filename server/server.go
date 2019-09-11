@@ -20,12 +20,11 @@ package server
 
 import (
 	"github.com/zdnscloud/lvmd/commands"
+	pb "github.com/zdnscloud/lvmd/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"strings"
-
-	pb "github.com/zdnscloud/lvmd/proto"
 )
 
 type Server struct{}
@@ -69,6 +68,22 @@ func (s Server) CloneLV(ctx context.Context, in *pb.CloneLVRequest) (*pb.CloneLV
 		return nil, grpc.Errorf(codes.Internal, "failed to clone lv: %v\nCommandOutput: %v", err, streamline(log))
 	}
 	return &pb.CloneLVReply{CommandOutput: log}, nil
+}
+
+func (s Server) ResizeLV(ctx context.Context, in *pb.ResizeLVRequest) (*pb.ResizeLVReply, error) {
+	log1, err := commands.ResizeLV(ctx, in.VolumeGroup, in.Name, in.Size)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to resize lv: %v\nCommandOutput: %v", err, streamline(log1))
+	}
+	log2, err := commands.ResizeLVe2fsck(ctx, in.VolumeGroup, in.Name)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to e2fsck lv: %v\nCommandOutput: %v", err, streamline(log2))
+	}
+	log3, err := commands.ResizeLV2fs(ctx, in.VolumeGroup, in.Name)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to resize2fs lv: %v\nCommandOutput: %v", err, streamline(log3))
+	}
+	return &pb.ResizeLVReply{CommandOutput: log1 + "|" + log2 + "|" + log3}, nil
 }
 
 func (s Server) ListVG(ctx context.Context, in *pb.ListVGRequest) (*pb.ListVGReply, error) {
