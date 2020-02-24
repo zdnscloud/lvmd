@@ -51,6 +51,32 @@ func ListLV(ctx context.Context, listspec string) ([]*parser.LV, error) {
 	return lvs, nil
 }
 
+func CreateThinPoolUseAllSize(ctx context.Context, vg string, pool string) (string, error) {
+	args := []string{"-v", "-l", "100%FREE", "--thinpool", pool, vg, "-y"}
+	cmd := exec.Command("lvcreate", args...)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
+// CreateLV creates a new volume
+func CreateThinLV(ctx context.Context, vg string, name string, size uint64, mirrors uint32, tags []string) (string, error) {
+	if size == 0 {
+		return "", errors.New("size must be greater than 0")
+	}
+
+	args := []string{"--thin", "-v", "-n", name, "-V", fmt.Sprintf("%db", size)}
+	if mirrors > 0 {
+		args = append(args, "-m", fmt.Sprintf("%d", mirrors), "--nosync")
+	}
+	for _, tag := range tags {
+		args = append(args, "--add-tag", tag)
+	}
+	args = append(args, vg)
+	cmd := exec.Command("lvcreate", args...)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
 // CreateLV creates a new volume
 func CreateLV(ctx context.Context, vg string, name string, size uint64, mirrors uint32, tags []string) (string, error) {
 	if size == 0 {

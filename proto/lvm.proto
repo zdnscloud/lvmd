@@ -133,6 +133,29 @@ message CreateLVReply {
   string command_output = 1;
 }
 
+message CreateThinPoolRequest {
+  string volume_group = 1;
+  string pool = 2;
+}
+
+message CreateThinPoolReply {
+  string command_output = 1;
+}
+
+
+message CreateThinLVRequest {
+  string volume_group = 1;
+  string pool = 2;
+  string name = 3;
+  uint64 size = 4;
+  uint32 mirrors = 5;
+  repeated string tags = 6;
+}
+
+message CreateThinLVReply {
+  string command_output = 1;
+}
+
 message RemoveLVRequest {
   string volume_group = 1;
   string name = 2;

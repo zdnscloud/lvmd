@@ -19,12 +19,15 @@ limitations under the License.
 package server
 
 import (
-	"github.com/zdnscloud/lvmd/commands"
-	pb "github.com/zdnscloud/lvmd/proto"
+	"fmt"
+	"strings"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"strings"
+
+	"github.com/zdnscloud/lvmd/commands"
+	pb "github.com/zdnscloud/lvmd/proto"
 )
 
 type Server struct{}
@@ -52,6 +55,23 @@ func (s Server) CreateLV(ctx context.Context, in *pb.CreateLVRequest) (*pb.Creat
 		return nil, grpc.Errorf(codes.Internal, "failed to create lv: %v\nCommandOutput: %v", err, streamline(log))
 	}
 	return &pb.CreateLVReply{CommandOutput: log}, nil
+}
+
+func (s Server) CreateThinPool(ctx context.Context, in *pb.CreateThinPoolRequest) (*pb.CreateThinPoolReply, error) {
+	log, err := commands.CreateThinPoolUseAllSize(ctx, in.VolumeGroup, in.Pool)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to create lv: %v\nCommandOutput: %v", err, streamline(log))
+	}
+	return &pb.CreateThinPoolReply{CommandOutput: log}, nil
+}
+
+func (s Server) CreateThinLV(ctx context.Context, in *pb.CreateThinLVRequest) (*pb.CreateThinLVReply, error) {
+	vg := fmt.Sprintf("%s/%s", in.VolumeGroup, in.Pool)
+	log, err := commands.CreateThinLV(ctx, vg, in.Name, in.Size, in.Mirrors, in.Tags)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to create lv: %v\nCommandOutput: %v", err, streamline(log))
+	}
+	return &pb.CreateThinLVReply{CommandOutput: log}, nil
 }
 
 func (s Server) RemoveLV(ctx context.Context, in *pb.RemoveLVRequest) (*pb.RemoveLVReply, error) {
