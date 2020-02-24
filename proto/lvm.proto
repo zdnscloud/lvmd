@@ -298,6 +298,8 @@ message GetPVNumReply {
 service LVM {
  rpc ListLV(ListLVRequest) returns (ListLVReply) {}
  rpc CreateLV(CreateLVRequest) returns (CreateLVReply) {}
+ rpc CreateThinPool(CreateThinPoolRequest) returns (CreateThinPoolReply) {}
+ rpc CreateThinLV(CreateThinLVRequest) returns (CreateThinLVReply) {}
  rpc RemoveLV(RemoveLVRequest) returns (RemoveLVReply) {}
  rpc CloneLV(CloneLVRequest) returns (CloneLVReply) {}
  rpc ResizeLV(ResizeLVRequest) returns (ResizeLVReply) {}
