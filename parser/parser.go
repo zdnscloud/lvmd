@@ -270,8 +270,8 @@ type LV struct {
 	UUID               string
 	Attributes         LVAttributes
 	CopyPercent        string
-	ActualDevMajNumber uint32
-	ActualDevMinNumber uint32
+	ActualDevMajNumber int32
+	ActualDevMinNumber int32
 	Tags               []string
 }
 
@@ -300,8 +300,8 @@ func (lv LV) ToProto() *pb.LogicalVolume {
 		Uuid:                 lv.UUID,
 		Attributes:           lv.Attributes.ToProto(),
 		CopyPercent:          lv.CopyPercent,
-		ActualDevMajorNumber: lv.ActualDevMajNumber,
-		ActualDevMinorNumber: lv.ActualDevMinNumber,
+		ActualDevMajorNumber: uint32(lv.ActualDevMajNumber),
+		ActualDevMinorNumber: uint32(lv.ActualDevMinNumber),
 		Tags:                 lv.Tags,
 	}
 }
@@ -376,12 +376,12 @@ func ParseLV(line string) (*LV, error) {
 		return nil, err
 	}
 
-	kernelMajNumber, err := strconv.ParseUint(fields["LVM2_LV_KERNEL_MAJOR"], 10, 32)
+	kernelMajNumber, err := strconv.ParseInt(fields["LVM2_LV_KERNEL_MAJOR"], 10, 32)
 	if err != nil {
 		return nil, err
 	}
 
-	kernelMinNumber, err := strconv.ParseUint(fields["LVM2_LV_KERNEL_MINOR"], 10, 32)
+	kernelMinNumber, err := strconv.ParseInt(fields["LVM2_LV_KERNEL_MINOR"], 10, 32)
 	if err != nil {
 		return nil, err
 	}
@@ -397,8 +397,8 @@ func ParseLV(line string) (*LV, error) {
 		UUID:               fields["LVM2_LV_UUID"],
 		Attributes:         *attrs,
 		CopyPercent:        fields["LVM2_COPY_PERCENT"],
-		ActualDevMajNumber: uint32(kernelMajNumber),
-		ActualDevMinNumber: uint32(kernelMinNumber),
+		ActualDevMajNumber: int32(kernelMajNumber),
+		ActualDevMinNumber: int32(kernelMinNumber),
 		Tags:               strings.Split(fields["LVM2_LV_TAGS"], ","),
 	}, nil
 }

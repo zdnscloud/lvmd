@@ -10,6 +10,6 @@ FROM alpine:3.9.4
 
 LABEL maintainers="Zdns Authors"
 LABEL description="K8S Lvmd"
-RUN apk update && apk add udev blkid file util-linux e2fsprogs lvm2 udev sgdisk device-mapper e2fsprogs e2fsprogs-extra cfdisk
+RUN apk update && apk add udev blkid file util-linux e2fsprogs lvm2 udev sgdisk device-mapper e2fsprogs e2fsprogs-extra cfdisk thin-provisioning-tools
 COPY --from=build /go/src/github.com/zdnscloud/lvmd/lvmd /lvmd
 ENTRYPOINT ["/bin/sh"]

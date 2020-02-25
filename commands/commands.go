@@ -77,6 +77,15 @@ func CreateThinLV(ctx context.Context, vg string, name string, size uint64, mirr
 	return string(out), err
 }
 
+func ChangeLV(ctx context.Context, vg string, name string) (string, error) {
+	//lvchange -a y /dev/iscsi-group/iscsi-pool
+	dev := fmt.Sprintf("/dev/%s/%s", vg, name)
+	args := []string{"-a", "y", dev}
+	cmd := exec.Command("lvchange", args...)
+	out, err := cmd.CombinedOutput()
+	return string(out), err
+}
+
 // CreateLV creates a new volume
 func CreateLV(ctx context.Context, vg string, name string, size uint64, mirrors uint32, tags []string) (string, error) {
 	if size == 0 {

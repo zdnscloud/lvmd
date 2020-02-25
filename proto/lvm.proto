@@ -142,6 +142,15 @@ message CreateThinPoolReply {
   string command_output = 1;
 }
 
+message ChangeLVRequest {
+  string volume_group = 1;
+  string name = 2;
+}
+
+message ChangeLVReply {
+  string command_output = 1;
+}
+
 
 message CreateThinLVRequest {
   string volume_group = 1;
@@ -300,6 +309,7 @@ service LVM {
  rpc CreateLV(CreateLVRequest) returns (CreateLVReply) {}
  rpc CreateThinPool(CreateThinPoolRequest) returns (CreateThinPoolReply) {}
  rpc CreateThinLV(CreateThinLVRequest) returns (CreateThinLVReply) {}
+ rpc ChangeLV(ChangeLVRequest) returns (ChangeLVReply) {}
  rpc RemoveLV(RemoveLVRequest) returns (RemoveLVReply) {}
  rpc CloneLV(CloneLVRequest) returns (CloneLVReply) {}
  rpc ResizeLV(ResizeLVRequest) returns (ResizeLVReply) {}

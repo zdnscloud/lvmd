@@ -39,7 +39,7 @@ func NewServer() Server {
 func (s Server) ListLV(ctx context.Context, in *pb.ListLVRequest) (*pb.ListLVReply, error) {
 	lvs, err := commands.ListLV(ctx, in.VolumeGroup)
 	if err != nil {
-		return nil, grpc.Errorf(codes.Internal, "failed to list LVs: %v\nCommandOutput: %v", err, lvs)
+		return nil, grpc.Errorf(codes.Internal, "failed to list LV: %v\nCommandOutput: %v", err, lvs)
 	}
 
 	pblvs := make([]*pb.LogicalVolume, len(lvs))
@@ -60,16 +60,24 @@ func (s Server) CreateLV(ctx context.Context, in *pb.CreateLVRequest) (*pb.Creat
 func (s Server) CreateThinPool(ctx context.Context, in *pb.CreateThinPoolRequest) (*pb.CreateThinPoolReply, error) {
 	log, err := commands.CreateThinPoolUseAllSize(ctx, in.VolumeGroup, in.Pool)
 	if err != nil {
-		return nil, grpc.Errorf(codes.Internal, "failed to create lv: %v\nCommandOutput: %v", err, streamline(log))
+		return nil, grpc.Errorf(codes.Internal, "failed to create thin pool: %v\nCommandOutput: %v", err, streamline(log))
 	}
 	return &pb.CreateThinPoolReply{CommandOutput: log}, nil
+}
+
+func (s Server) ChangeLV(ctx context.Context, in *pb.ChangeLVRequest) (*pb.ChangeLVReply, error) {
+	log, err := commands.ChangeLV(ctx, in.VolumeGroup, in.Name)
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "failed to change lv: %v\nCommandOutput: %v", err, streamline(log))
+	}
+	return &pb.ChangeLVReply{CommandOutput: log}, nil
 }
 
 func (s Server) CreateThinLV(ctx context.Context, in *pb.CreateThinLVRequest) (*pb.CreateThinLVReply, error) {
 	vg := fmt.Sprintf("%s/%s", in.VolumeGroup, in.Pool)
 	log, err := commands.CreateThinLV(ctx, vg, in.Name, in.Size, in.Mirrors, in.Tags)
 	if err != nil {
-		return nil, grpc.Errorf(codes.Internal, "failed to create lv: %v\nCommandOutput: %v", err, streamline(log))
+		return nil, grpc.Errorf(codes.Internal, "failed to create thin lv: %v\nCommandOutput: %v", err, streamline(log))
 	}
 	return &pb.CreateThinLVReply{CommandOutput: log}, nil
 }
@@ -109,7 +117,7 @@ func (s Server) ResizeLV(ctx context.Context, in *pb.ResizeLVRequest) (*pb.Resiz
 func (s Server) ListVG(ctx context.Context, in *pb.ListVGRequest) (*pb.ListVGReply, error) {
 	vgs, err := commands.ListVG(ctx)
 	if err != nil {
-		return nil, grpc.Errorf(codes.Internal, "failed to list LVs: %v\nCommandOutput: %v", err, vgs)
+		return nil, grpc.Errorf(codes.Internal, "failed to list vg: %v\nCommandOutput: %v", err, vgs)
 	}
 
 	pbvgs := make([]*pb.VolumeGroup, len(vgs))
